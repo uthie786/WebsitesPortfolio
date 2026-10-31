@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Uthmaan Essack — Web Portfolio</title>
+<meta name="description" content="A selection of websites designed and built by Uthmaan Essack, Umhlanga, KZN." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* ───────────── Theme ───────────── */
+  :root {
+    --bg: #e4e9f0;
+    --text: #2f3a4a;
+    --muted: #7a8698;
+    --accent: #5b7cfa;
+    --accent-2: #8a5bfa;
+    --light: rgba(255, 255, 255, 0.85);
+    --dark: rgba(163, 177, 198, 0.65);
+    --radius: 26px;
+    --out: 9px 9px 18px var(--dark), -9px -9px 18px var(--light);
+    --out-sm: 5px 5px 10px var(--dark), -5px -5px 10px var(--light);
+    --in: inset 6px 6px 12px var(--dark), inset -6px -6px 12px var(--light);
+    --in-sm: inset 3px 3px 6px var(--dark), inset -3px -3px 6px var(--light);
+  }
+  [data-theme="dark"] {
+    --bg: #262b33;
+    --text: #e3e8ef;
+    --muted: #8d97a6;
+    --accent: #7d97ff;
+    --accent-2: #a98bff;
+    --light: rgba(62, 70, 82, 0.75);
+    --dark: rgba(12, 14, 18, 0.7);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.4s ease, color 0.4s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; border: none; background: none; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ───────────── Header ───────────── */
+  header { padding: 28px 0 0; }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-radius: 22px; box-shadow: var(--out);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -0.02em; }
+  .logo {
+    width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center;
+    box-shadow: var(--out-sm); font-weight: 800; font-size: 15px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .theme-btn {
+    width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+    box-shadow: var(--out-sm); transition: box-shadow 0.2s;
+  }
+  .theme-btn:active { box-shadow: var(--in-sm); }
+  .theme-btn svg { width: 20px; height: 20px; }
+
+  /* ───────────── Hero ───────────── */
+  .hero { text-align: center; padding: 72px 0 48px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px;
+    box-shadow: var(--in-sm); font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #3ecf8e; box-shadow: 0 0 10px #3ecf8e; }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 68px); font-weight: 800; letter-spacing: -0.04em;
+    line-height: 1.05; margin: 26px auto 18px; max-width: 820px;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { color: var(--muted); font-size: 18px; max-width: 580px; margin: 0 auto; line-height: 1.6; }
+
+  .status {
+    position: absolute; top: 12px; left: 12px; z-index: 3; pointer-events: none;
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px;
+    background: var(--bg); box-shadow: var(--out-sm);
+    font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  }
+  .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status.live { color: #2fb67c; }
+  .status.live::before { box-shadow: 0 0 8px #3ecf8e; }
+  .status.concept { color: var(--accent-2); }
+  .status.prototype { color: #e0912f; }
+
+  /* ───────────── Controls ───────────── */
+  .controls {
+    display: flex; gap: 18px; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; margin-bottom: 36px;
+  }
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chip {
+    padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
+    box-shadow: var(--out-sm); color: var(--muted); transition: all 0.2s ease;
+  }
+  .chip:hover { color: var(--text); }
+  .chip.active { box-shadow: var(--in-sm); color: var(--accent); }
+  .search {
+    display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px;
+    box-shadow: var(--in-sm); min-width: 240px; flex: 0 1 300px;
+  }
+  .search svg { width: 18px; height: 18px; color: var(--muted); flex-shrink: 0; }
+  .search input {
+    border: none; background: none; outline: none; font: inherit; color: var(--text); width: 100%;
+  }
+  .search input::placeholder { color: var(--muted); }
+
+  /* ───────────── Grid & Cards ───────────── */
+  .grid {
+    display: grid; gap: 34px;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    padding-bottom: 40px;
+  }
+  .card {
+    border-radius: var(--radius); padding: 18px; box-shadow: var(--out);
+    display: flex; flex-direction: column; gap: 18px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: rise 0.6s ease both;
+  }
+  .card:hover { transform: translateY(-4px); }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+
+  .screen {
+    position: relative; border-radius: 18px; padding: 10px; box-shadow: var(--in);
+  }
+  .screen-bar { display: flex; gap: 6px; padding: 2px 4px 9px; }
+  .screen-bar i { width: 9px; height: 9px; border-radius: 50%; box-shadow: var(--in-sm); }
+  .preview {
+    position: relative; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+  .preview .fallback {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    color: #fff; font-size: 44px; font-weight: 800; letter-spacing: -0.04em; opacity: 0.9;
+  }
+  .preview iframe {
+    position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0;
+    transform-origin: 0 0; pointer-events: none; background: #fff;
+    opacity: 0; transition: opacity 0.6s ease;
+  }
+  .preview iframe.loaded { opacity: 1; }
+  .preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .preview-link { position: absolute; inset: 0; z-index: 2; }
+
+  .card-head { display: flex; align-items: center; gap: 14px; padding: 0 4px; }
+  .icon {
+    width: 48px; height: 48px; border-radius: 15px; flex-shrink: 0; overflow: hidden;
+    box-shadow: var(--out-sm); display: grid; place-items: center; font-weight: 800; color: var(--accent);
+  }
+  .icon img { width: 30px; height: 30px; object-fit: contain; }
+  .card h3 { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+  .card .url { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .card p { color: var(--muted); font-size: 14.5px; line-height: 1.6; padding: 0 4px; flex: 1; }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 4px; }
+  .tag {
+    font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+    box-shadow: var(--in-sm); color: var(--muted);
+  }
+
+  .actions { display: flex; gap: 12px; padding: 2px 4px 4px; }
+  .btn {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 16px; border-radius: 16px; font-size: 14px; font-weight: 700;
+    box-shadow: var(--out-sm); transition: box-shadow 0.2s ease, color 0.2s ease;
+  }
+  .btn:hover { color: var(--accent); }
+  .btn:active { box-shadow: var(--in-sm); }
+  .btn svg { width: 16px; height: 16px; }
+  .btn.primary { color: var(--accent); }
+  .btn.square { flex: 0 0 48px; padding: 13px 0; }
+
+  .empty { text-align: center; color: var(--muted); padding: 60px 0; grid-column: 1 / -1; display: none; }
+
+  /* ───────────── Footer ───────────── */
+  footer { padding: 40px 0 50px; }
+  .foot {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    padding: 24px 28px; border-radius: 22px; box-shadow: var(--in); color: var(--muted); font-size: 14px;
+  }
+  .foot a { font-weight: 700; color: var(--text); }
+  .foot a:hover { color: var(--accent); }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translate(-50%, 120px);
+    padding: 14px 22px; border-radius: 16px; background: var(--bg); box-shadow: var(--out);
+    font-weight: 700; font-size: 14px; transition: transform 0.35s ease; z-index: 10;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+    .hero { padding: 52px 0 36px; }
+    .search { flex: 1 1 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <nav class="nav">
+    <div class="brand"><div class="logo">UE</div>Uthmaan Essack</div>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode"></button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="badge"><span class="dot"></span>Available for new projects</span>
+    <h1>Websites I've <span>designed &amp; built</span></h1>
+    <p>A collection of sites for local businesses, brands and experiments, crafted in Umhlanga, KZN.</p>
+  </section>
+
+  <section id="work">
+    <div class="controls">
+      <div class="filters" id="filters"></div>
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Search sites…" aria-label="Search sites" />
+      </label>
+    </div>
+    <div class="grid" id="grid">
+      <div class="empty" id="empty">No sites match that search.</div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="foot">
+    <span>© <span id="year"></span> Uthmaan Essack · Umhlanga, KZN</span>
+    <a href="mailto:uthmaan.essack@gmail.com">uthmaan.essack@gmail.com</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Link copied</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ✏️  ADD / EDIT YOUR WEBSITES HERE
+   Copy one { ... } block, paste it into the list, and change the values.
+   Only "name" and "url" are required — everything else is optional.
+
+   name        – Title shown on the card
+   url         – Full link to the live site
+   description – One or two sentences about the project
+   status      – "Live", "Concept" or "Prototype". Shown as a badge on the card
+                 and as a filter button. Live sites are always shown first.
+   tags        – (optional) Extra categories; these also become filter buttons
+   image      – (optional) Screenshot path/URL, e.g. "images/soho.png".
+                 If left out, a live preview of the site is shown instead.
+   icon        – (optional) Small logo path/URL. Defaults to the site's favicon.
+   ═══════════════════════════════════════════════════════════════ */
+const SITES = [
+  {
+    name: "Oasis Lodge Margate",
+    url: "https://oasismargate.co.za",
+    status: "Live",
+    description: "A site for Oasis Lodge on the KZN South Coast in Margate.",
+    tags: ["Hospitality"]
+  },
+  {
+    name: "What's Up Durbs",
+    url: "https://whatsupdurbs.vercel.app",
+    status: "Live",
+    description: "A guide to what's happening around Durban: events, spots and things to do.",
+    tags: ["Lifestyle"]
+  },
+  {
+    name: "AURA KINETIX",
+    url: "https://drinksprototype.vercel.app",
+    status: "Prototype",
+    description: "An interactive WebGL concept site for a fictional luxury beverage brand.",
+    tags: ["WebGL"]
+  },
+  {
+    name: "Barber at Pearls",
+    url: "https://pearls-barber.vercel.app",
+    status: "Concept",
+    description: "A concept site for Barber at Pearls, a barbershop at Pearls Mall in Umhlanga.",
+    tags: ["Business"]
+  },
+  {
+    name: "Soho Café",
+    url: "https://soho-cafe.vercel.app",
+    status: "Concept",
+    description: "A warm, menu-forward website concept for a neighbourhood café.",
+    tags: ["Hospitality"]
+  },
+  {
+    name: "Rooftop 420",
+    url: "https://rooftop420.vercel.app",
+    status: "Concept",
+    description: "A moody, atmospheric concept site for a rooftop lounge venue.",
+    tags: ["Hospitality"]
+  },
+  {
+    name: "Njoms Landscaping",
+    url: "https://njoms-landscaping.vercel.app",
+    status: "Concept",
+    description: "A clean, lead-focused concept site for a landscaping and garden services business.",
+    tags: ["Business"]
+  },
+];
+
+/* ───────────── You shouldn't need to edit below this line ───────────── */
+const $ = (s) => document.querySelector(s);
+const grid = $("#grid"), empty = $("#empty");
+let activeTag = "All", query = "";
+
+const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+const initials = (n) => n.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+const esc = (s = "") => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const ICONS = {
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+};
+
+function cardHTML(site, i) {
+  const h = host(site.url);
+  const icon = site.icon || `https://www.google.com/s2/favicons?domain=${h}&sz=64`;
+  const preview = site.image
+    ? `<img src="${esc(site.image)}" alt="Screenshot of ${esc(site.name)}" loading="lazy">`
+    : `<iframe data-src="${esc(site.url)}" title="Live preview of ${esc(site.name)}" loading="lazy" tabindex="-1" aria-hidden="true" sandbox="allow-scripts allow-same-origin"></iframe>`;
+  return `
+  <article class="card" style="animation-delay:${i * 70}ms">
+    <div class="screen">
+      <div class="screen-bar"><i></i><i></i><i></i></div>
+      <div class="preview">
+        <div class="fallback">${initials(site.name)}</div>
+        ${site.status ? `<span class="status ${esc(site.status.toLowerCase())}">${esc(site.status)}</span>` : ""}
+        ${preview}
+        <a class="preview-link" href="${esc(site.url)}" target="_blank" rel="noopener" aria-label="Open ${esc(site.name)}"></a>
+      </div>
+    </div>
+    <div class="card-head">
+      <div class="icon"><img src="${esc(icon)}" alt="" onerror="this.replaceWith(document.createTextNode('${initials(site.name)}'))"></div>
+      <div><h3>${esc(site.name)}</h3><div class="url">${esc(h)}</div></div>
+    </div>
+    ${site.description ? `<p>${esc(site.description)}</p>` : ""}
+    ${site.tags?.length ? `<div class="tags">${site.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+    <div class="actions">
+      <a class="btn primary" href="${esc(site.url)}" target="_blank" rel="noopener">Visit site ${ICONS.arrow}</a>
+      <button class="btn square" data-copy="${esc(site.url)}" aria-label="Copy link">${ICONS.copy}</button>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const q = query.trim().toLowerCase();
+  const list = SITES.filter(s =>
+    (activeTag === "All" || labels(s).includes(activeTag)) &&
+    (!q || [s.name, s.url, s.description, ...labels(s)].join(" ").toLowerCase().includes(q))
+  ).sort((a, b) => (b.status === "Live") - (a.status === "Live"));
+  grid.querySelectorAll(".card").forEach(c => c.remove());
+  grid.insertAdjacentHTML("beforeend", list.map(cardHTML).join(""));
+  empty.style.display = list.length ? "none" : "block";
+  setupPreviews();
+}
+
+const labels = (s) => [s.status, ...(s.tags || [])].filter(Boolean);
+const STATUS_ORDER = ["Live", "Concept", "Prototype"];
+
+function renderFilters() {
+  const statuses = STATUS_ORDER.filter(st => SITES.some(s => s.status === st));
+  const tags = ["All", ...new Set([...statuses, ...SITES.flatMap(s => s.tags || [])])];
+  $("#filters").innerHTML = tags.map(t =>
+    `<button class="chip${t === activeTag ? " active" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("");
+}
+
+/* Live previews: scale a desktop-sized iframe down to fit the card, load only when visible */
+const resizer = new ResizeObserver(entries => {
+  entries.forEach(e => {
+    const f = e.target.querySelector("iframe");
+    if (f) f.style.transform = `scale(${e.contentRect.width / 1440})`;
+  });
+});
+const loader = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const f = e.target.querySelector("iframe[data-src]");
+    if (f) {
+      f.addEventListener("load", () => f.classList.add("loaded"), { once: true });
+      f.src = f.dataset.src;
+      f.removeAttribute("data-src");
+    }
+    loader.unobserve(e.target);
+  });
+}, { rootMargin: "200px" });
+
+function setupPreviews() {
+  grid.querySelectorAll(".preview").forEach(p => {
+    if (p.querySelector("iframe")) { resizer.observe(p); loader.observe(p); }
+  });
+}
+
+/* Events */
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  activeTag = b.dataset.tag; renderFilters(); render();
+});
+$("#search").addEventListener("input", e => { query = e.target.value; render(); });
+grid.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  try { await navigator.clipboard.writeText(b.dataset.copy); } catch {}
+  const t = $("#toast"); t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 1600);
+});
+
+/* Theme */
+const themeBtn = $("#themeBtn");
+function setTheme(mode) {
+  document.documentElement.dataset.theme = mode;
+  themeBtn.innerHTML = mode === "dark" ? ICONS.sun : ICONS.moon;
+  try { localStorage.setItem("theme", mode); } catch {}
+}
+let saved = null; try { saved = localStorage.getItem("theme"); } catch {}
+setTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+themeBtn.addEventListener("click", () =>
+  setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+
+$("#year").textContent = new Date().getFullYear();
+renderFilters();
+render();
+</script>
+</body>
+</html>
