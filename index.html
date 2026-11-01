@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Uthmaan Essack — Web Portfolio</title>
 <meta name="description" content="A selection of websites designed and built by Uthmaan Essack, Umhlanga, KZN." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,7 +35,9 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html, body { overflow-x: hidden; }
+  @supports (overflow: clip) { html, body { overflow-x: clip; } }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
     font-family: "Manrope", system-ui, sans-serif;
     background: var(--bg);
@@ -48,10 +50,14 @@
   button { font: inherit; color: inherit; border: none; background: none; cursor: pointer; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding-left: max(24px, env(safe-area-inset-left));
+    padding-right: max(24px, env(safe-area-inset-right));
+  }
 
   /* ───────────── Header ───────────── */
-  header { padding: 28px 0 0; }
+  header { padding-top: max(28px, calc(env(safe-area-inset-top) + 16px)); }
   .nav {
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 18px; border-radius: 22px; box-shadow: var(--out);
@@ -143,6 +149,7 @@
   .screen-bar i { width: 9px; height: 9px; border-radius: 50%; box-shadow: var(--in-sm); }
   .preview {
     position: relative; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden;
+    contain: strict; isolation: isolate; transform: translateZ(0);
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
   }
   .preview .fallback {
@@ -150,11 +157,22 @@
     color: #fff; font-size: 44px; font-weight: 800; letter-spacing: -0.04em; opacity: 0.9;
   }
   .preview iframe {
-    position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0;
+    position: absolute; top: 0; left: 0; border: 0;
     transform-origin: 0 0; pointer-events: none; background: #fff;
     opacity: 0; transition: opacity 0.6s ease;
   }
   .preview iframe.loaded { opacity: 1; }
+  .preview .loading {
+    position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 1;
+    width: 34%; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.3); overflow: hidden;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .preview .loading::after {
+    content: ""; position: absolute; inset: 0; width: 40%; border-radius: 4px; background: #fff;
+    animation: slide 1.1s ease-in-out infinite;
+  }
+  .preview.is-loading .loading { opacity: 1; }
+  @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
   .preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
   .preview-link { position: absolute; inset: 0; z-index: 2; }
 
@@ -189,7 +207,7 @@
   .empty { text-align: center; color: var(--muted); padding: 60px 0; grid-column: 1 / -1; display: none; }
 
   /* ───────────── Footer ───────────── */
-  footer { padding: 40px 0 50px; }
+  footer { padding-top: 40px; padding-bottom: max(50px, calc(env(safe-area-inset-bottom) + 24px)); }
   .foot {
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
     padding: 24px 28px; border-radius: 22px; box-shadow: var(--in); color: var(--muted); font-size: 14px;
@@ -272,7 +290,7 @@
 const SITES = [
   {
     name: "Oasis Lodge Margate",
-    url: "https://oasismargate.co.za",
+    url: "https://oasis-margate.vercel.app",
     status: "Live",
     description: "A site for Oasis Lodge on the KZN South Coast in Margate.",
     tags: ["Hospitality"]
@@ -342,12 +360,12 @@ function cardHTML(site, i) {
   const icon = site.icon || `https://www.google.com/s2/favicons?domain=${h}&sz=64`;
   const preview = site.image
     ? `<img src="${esc(site.image)}" alt="Screenshot of ${esc(site.name)}" loading="lazy">`
-    : `<iframe data-src="${esc(site.url)}" title="Live preview of ${esc(site.name)}" loading="lazy" tabindex="-1" aria-hidden="true" sandbox="allow-scripts allow-same-origin"></iframe>`;
+    : `<div class="loading"></div>`;
   return `
   <article class="card" style="animation-delay:${i * 70}ms">
     <div class="screen">
       <div class="screen-bar"><i></i><i></i><i></i></div>
-      <div class="preview">
+      <div class="preview"${site.image ? "" : ` data-live="${esc(site.url)}" data-name="${esc(site.name)}"`}>
         <div class="fallback">${initials(site.name)}</div>
         ${site.status ? `<span class="status ${esc(site.status.toLowerCase())}">${esc(site.status)}</span>` : ""}
         ${preview}
@@ -373,6 +391,7 @@ function render() {
     (activeTag === "All" || labels(s).includes(activeTag)) &&
     (!q || [s.name, s.url, s.description, ...labels(s)].join(" ").toLowerCase().includes(q))
   ).sort((a, b) => (b.status === "Live") - (a.status === "Live"));
+  resetPreviews();
   grid.querySelectorAll(".card").forEach(c => c.remove());
   grid.insertAdjacentHTML("beforeend", list.map(cardHTML).join(""));
   empty.style.display = list.length ? "none" : "block";
@@ -389,31 +408,119 @@ function renderFilters() {
     `<button class="chip${t === activeTag ? " active" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("");
 }
 
-/* Live previews: scale a desktop-sized iframe down to fit the card, load only when visible */
-const resizer = new ResizeObserver(entries => {
+/* ───────────── Live previews ─────────────
+   Each card shows the real site running in a scaled-down iframe.
+   To keep phones (especially iOS Safari) from running out of memory:
+   • a preview only starts once its card has stayed on screen for a moment,
+     so scrolling fast past cards loads nothing
+   • previews load one at a time, never all at once
+   • only a few can be running at once; the oldest off-screen one is shut down
+   • on phones, a preview is shut down as soon as it scrolls off screen          */
+const IS_MOBILE = matchMedia("(max-width: 700px), (pointer: coarse)").matches;
+const VW = IS_MOBILE ? 1024 : 1440;          // virtual browser width the site renders at
+const VH = Math.round(VW * 0.625);           // 16:10
+const MAX_LIVE = IS_MOBILE ? 2 : 4;          // most previews running at the same time
+const DWELL = IS_MOBILE ? 500 : 250;         // ms a card must stay visible before loading
+const LOAD_TIMEOUT = 6000;                   // move on if a site is slow to report "loaded"
+
+let live = [], queue = [], busy = null;
+const visible = new Set(), timers = new Map();
+
+function scaleFrame(p) {
+  const f = p.querySelector("iframe");
+  if (f) f.style.transform = `scale(${p.clientWidth / VW})`;
+}
+
+function finishLoading(p) {
+  p.classList.remove("is-loading");
+  if (busy === p) { busy = null; next(); }
+}
+
+function mount(p) {
+  if (p.querySelector("iframe")) return;
+  while (live.length >= MAX_LIVE) unmount(live.find(x => !visible.has(x)) || live[0]);
+
+  const f = document.createElement("iframe");
+  f.title = `Live preview of ${p.dataset.name}`;
+  f.tabIndex = -1;
+  f.setAttribute("aria-hidden", "true");
+  f.setAttribute("scrolling", "no");
+  f.setAttribute("sandbox", "allow-scripts allow-same-origin");
+  f.style.width = VW + "px";
+  f.style.height = VH + "px";
+
+  const timeout = setTimeout(() => finishLoading(p), LOAD_TIMEOUT);
+  f.addEventListener("load", () => {
+    clearTimeout(timeout);
+    f.classList.add("loaded");
+    finishLoading(p);
+  }, { once: true });
+
+  busy = p;
+  live.push(p);
+  p.classList.add("is-loading");
+  p.appendChild(f);
+  scaleFrame(p);
+  f.src = p.dataset.live;
+}
+
+function unmount(p) {
+  if (!p) return;
+  const f = p.querySelector("iframe");
+  if (f) { f.src = "about:blank"; f.remove(); }   // frees the page's memory
+  live = live.filter(x => x !== p);
+  queue = queue.filter(x => x !== p);
+  p.classList.remove("is-loading");
+  if (busy === p) { busy = null; next(); }
+}
+
+function next() {
+  if (busy || document.hidden) return;
+  while (queue.length) {
+    const p = queue.shift();
+    if (visible.has(p) && !p.querySelector("iframe")) { mount(p); return; }
+  }
+}
+
+function request(p) {
+  if (p.querySelector("iframe") || queue.includes(p)) return;
+  queue.push(p);
+  next();
+}
+
+const watcher = new IntersectionObserver(entries => {
   entries.forEach(e => {
-    const f = e.target.querySelector("iframe");
-    if (f) f.style.transform = `scale(${e.contentRect.width / 1440})`;
-  });
-});
-const loader = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    const f = e.target.querySelector("iframe[data-src]");
-    if (f) {
-      f.addEventListener("load", () => f.classList.add("loaded"), { once: true });
-      f.src = f.dataset.src;
-      f.removeAttribute("data-src");
+    const p = e.target;
+    if (e.isIntersecting && e.intersectionRatio >= 0.5) {
+      visible.add(p);
+      if (!timers.has(p)) timers.set(p, setTimeout(() => { timers.delete(p); if (visible.has(p)) request(p); }, DWELL));
+    } else {
+      visible.delete(p);
+      clearTimeout(timers.get(p)); timers.delete(p);
+      queue = queue.filter(x => x !== p);
+      if (!e.isIntersecting && IS_MOBILE) unmount(p);
     }
-    loader.unobserve(e.target);
   });
-}, { rootMargin: "200px" });
+}, { threshold: [0, 0.5] });
+
+const resizer = new ResizeObserver(entries => entries.forEach(e => scaleFrame(e.target)));
 
 function setupPreviews() {
-  grid.querySelectorAll(".preview").forEach(p => {
-    if (p.querySelector("iframe")) { resizer.observe(p); loader.observe(p); }
-  });
+  grid.querySelectorAll(".preview[data-live]").forEach(p => { watcher.observe(p); resizer.observe(p); });
 }
+
+function resetPreviews() {
+  [...live].forEach(unmount);
+  timers.forEach(clearTimeout); timers.clear();
+  visible.clear(); queue = []; busy = null;
+  watcher.disconnect(); resizer.disconnect();
+}
+
+// Don't load anything while the tab is in the background; on phones, free it all
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { if (IS_MOBILE) [...live].forEach(unmount); }
+  else { visible.forEach(p => request(p)); next(); }
+});
 
 /* Events */
 $("#filters").addEventListener("click", e => {
